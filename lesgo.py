@@ -12,7 +12,7 @@ df = pd.read_csv('ufc_data.csv')
 #defines a logistical regression model
 model = tf.keras.Sequential([
     # in input_shape, we have the number of our features
-    tf.keras.layers.Dense(units=1, input_shape=(51,), activation='sigmoid')
+    tf.keras.layers.Dense(units=1, input_shape=(3099,), activation='sigmoid')
 ])
 
 #compiles the model and specifies our metrics for the optimizer, loss, and accuracy metrics
@@ -29,13 +29,11 @@ numerical_features = df[['R_odds', 'B_odds', 'no_of_rounds',
                          'B_Weight_lbs', 'R_Weight_lbs']]
 
 categorical_features = ['R_fighter', 'B_fighter', 'weight_class', 'gender', 
-                        'B_Stance', 'R_Stance', 
+                        'B_Stance', 'R_Stance',
                         'B_win_by_Decision_Majority', 'B_win_by_Decision_Split', 'B_win_by_Decision_Unanimous', 'B_win_by_KO/TKO', 'B_win_by_Submission', 'B_win_by_TKO_Doctor_Stoppage',
                         'R_win_by_Decision_Majority', 'R_win_by_Decision_Split', 'R_win_by_Decision_Unanimous', 'R_win_by_KO/TKO', 'R_win_by_Submission', 'R_win_by_TKO_Doctor_Stoppage']
 
-
 encoded_data = pd.DataFrame() # A placeholder for encoded data
-
 
 for col in categorical_features:
     encoder = OneHotEncoder(handle_unknown='ignore')
@@ -46,9 +44,9 @@ for col in categorical_features:
 # Combine encoded and numerical features 
 X = pd.concat([encoded_data, numerical_features], axis=1) 
 
-y = df['Winner'] 
+y = df['Winner'].replace({'Red': 0, 'Blue': 1})
 
-
+#
 # Train-Test Split
 # this splits the data into training and testing sets. test_size = 0.2 would be an 80/20 split of training to testing data. random_state makes the split reproducible.
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -75,14 +73,19 @@ y_test = y_test.values
 
 print(X_train.shape)  # Should output something like (Num_Samples, 51 + Num_Encoded_Features)
 print(y_train.shape)  # Should output something like (Num_Samples,)
+print("\n\nnumerical features print: \n")
+print(numerical_features)
+
+print("\n\n df.head()print: \n")
+print(df.head())
 
 
-# model.fit(X_train, y_train, epochs=20, batch_size=128)
+model.fit(X_train, y_train, epochs=20, batch_size=128)
 
 
-# loss, accuracy = model.evaluate(X_test, y_test)
-# print('Test Loss:', loss)
-# print('Test Accuracy:', accuracy)
+loss, accuracy = model.evaluate(X_test, y_test)
+#print('Test Loss:', loss)
+print('Test Accuracy:', accuracy)
 
 
 # here we could replace new data with a new data set of fights to predict
