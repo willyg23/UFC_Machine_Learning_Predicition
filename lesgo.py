@@ -5,6 +5,11 @@ from sklearn.preprocessing import OneHotEncoder
 
 df = pd.read_csv('ufc_data.csv')
 
+# RELU and softmax activtion methods
+# funcntional api is for more complex things. multiple inputs mapped to multiple outputs
+# sequential api is less complex, one input to one output
+
+
 #prints all the columns in df
 # columns = df.columns
 # print(columns)
