@@ -5,9 +5,13 @@ from sklearn.preprocessing import OneHotEncoder
 
 df = pd.read_csv('ufc_data.csv')
 
+# mango advice
 # RELU and softmax activtion methods
 # funcntional api is for more complex things. multiple inputs mapped to multiple outputs
 # sequential api is less complex, one input to one output
+
+# ade advice on what to add
+# you could add batch normalization, max pulling, convoloution neural networks use many layers to predict output
 
 
 #prints all the columns in df
