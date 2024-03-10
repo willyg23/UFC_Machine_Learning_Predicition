@@ -31,23 +31,36 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 #X_train = df[['R_fighter', 'B_fighter', 'R_odds', 'B_odds', 'weight_class','gender','no_of_rounds', 'B_current_lose_streak','B_current_win_streak','B_avg_SIG_STR_landed','B_avg_SIG_STR_pct','B_avg_SUB_ATT','B_avg_TD_landed','B_avg_TD_pct','B_longest_win_streak', 'B_losses','B_total_rounds_fought','B_total_title_bouts','B_win_by_Decision_Majority','B_win_by_Decision_Split','B_win_by_Decision_Unanimous','B_win_by_KO/TKO','B_win_by_Submission','B_win_by_TKO_Doctor_Stoppage','B_wins','B_Stance','B_Height_cms','B_Reach_cms', 'R_current_lose_streak','R_current_win_streak','R_avg_SIG_STR_landed','R_avg_SIG_STR_pct','R_avg_SUB_ATT','R_avg_TD_landed','R_avg_TD_pct','R_longest_win_streak', 'R_losses','R_total_rounds_fought','R_total_title_bouts','R_win_by_Decision_Majority','R_win_by_Decision_Split','R_win_by_Decision_Unanimous','R_win_by_KO/TKO','R_win_by_Submission','R_win_by_TKO_Doctor_Stoppage','R_wins','R_Stance','R_Height_cms','R_Reach_cms', 'B_match_weightclass_rank','R_match_weightclass_rank']]
 #y_train =df[['Winner']]
 
-
+'''
+Numerical Features: These are already in a numerical format suitable for direct use in machine learning models: 
+'''
 numerical_features = df[['R_odds', 'B_odds', 'no_of_rounds', 
                          'B_current_lose_streak', 'B_current_win_streak', 'B_avg_SIG_STR_landed', 'B_avg_SIG_STR_pct', 'B_avg_SUB_ATT', 'B_avg_TD_landed', 'B_avg_TD_pct', 'B_longest_win_streak', 'B_losses', 'B_total_rounds_fought', 'B_total_title_bouts', 'B_Height_cms', 'B_Reach_cms',
                          'R_current_lose_streak', 'R_current_win_streak', 'R_avg_SIG_STR_landed', 'R_avg_SIG_STR_pct', 'R_avg_SUB_ATT', 'R_avg_TD_landed', 'R_avg_TD_pct', 'R_longest_win_streak', 'R_losses', 'R_total_rounds_fought', 'R_total_title_bouts',  'R_Height_cms', 'R_Reach_cms',
                          'B_Weight_lbs', 'R_Weight_lbs']]
 
+'''
+Categorical Features: These features contain categories (text or labels)
+and need to be converted to a numerical representation before being used by the model
+'''
 categorical_features = ['R_fighter', 'B_fighter', 'weight_class', 'gender', 
                         'B_Stance', 'R_Stance',
                         'B_win_by_Decision_Majority', 'B_win_by_Decision_Split', 'B_win_by_Decision_Unanimous', 'B_win_by_KO/TKO', 'B_win_by_Submission', 'B_win_by_TKO_Doctor_Stoppage',
                         'R_win_by_Decision_Majority', 'R_win_by_Decision_Split', 'R_win_by_Decision_Unanimous', 'R_win_by_KO/TKO', 'R_win_by_Submission', 'R_win_by_TKO_Doctor_Stoppage']
 
 encoded_data = pd.DataFrame() # A placeholder for encoded data
+'''
+This code performs one-hot encoding on categorical features. TensorFlow doesn't take in strings 
+(i.e. "orthoddox" for a fighters stance), so we one-hot encodeeach string to a unique
+'''
 
-for col in categorical_features:
+for col in categorical_features:  
+    # Create an encoder to handle unknown categories:
     encoder = OneHotEncoder(handle_unknown='ignore')
+    # Fit the encoder to the current column and transform it into numerical representations:
     encoded_col = encoder.fit_transform(df[[col]]).toarray()
-    encoded_data = pd.concat([encoded_data, pd.DataFrame(encoded_col)], axis=1)
+    # Convert the encoded column into a DataFrame and append it to the encoded features:
+    encoded_data = pd.concat([encoded_data, pd.DataFrame(encoded_col)], axis=1) 
 
 
 # Combine encoded and numerical features 
