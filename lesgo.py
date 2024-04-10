@@ -2,8 +2,8 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
-import seaborn as sns
-import matplotlib.pyplot as plt
+# import seaborn as sns
+# import matplotlib.pyplot as plt
 
 df = pd.read_csv('ufc_data.csv')
 
@@ -127,23 +127,34 @@ loss, accuracy = model.evaluate(X_test, y_test)
 #print('Test Loss:', loss)
 print('Test Accuracy:', accuracy)
 
-# Selecting the features for correlation analysis, excluding 'Winner' column
-features = ['R_odds', 'B_odds', 'B_current_lose_streak', 'B_current_win_streak', 
-            'R_current_lose_streak', 'R_current_win_streak', 'B_Height_cms', 
-            'R_Height_cms', 'B_Reach_cms', 'R_Reach_cms', 'B_total_rounds_fought', 
-            'R_total_rounds_fought']
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-# Selecting only these columns from the original DataFrame
+# Select features for correlation analysis
+features = ['R_odds', 'B_odds', 'R_current_lose_streak', 'B_current_lose_streak', 
+            'R_current_win_streak', 'B_current_win_streak', 'R_Height_cms', 
+            'B_Height_cms', 'R_Reach_cms', 'B_Reach_cms', 'R_total_rounds_fought', 
+            'B_total_rounds_fought']
+
+# Select only these columns from the original DataFrame
 corr_df = df[features]
 
-# Calculating the correlation matrix
-correlation_matrix = corr_df.corr()
+# Encode the 'Winner' column
+df['Winner_encoded'] = df['Winner'].map({'Red': 0, 'Blue': 1})
+
+# Ensure 'Winner_encoded' column is added to DataFrame
+numeric_corr_df = corr_df.assign(Winner_encoded=df['Winner_encoded'])
+
+# Calculate correlation with 'Winner_encoded'
+correlation_with_winner = numeric_corr_df.corr()['Winner_encoded']
 
 # Plotting the heatmap
 plt.figure(figsize=(12, 8))
-heatmap = sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f")
-plt.title('Correlation Heatmap')
+heatmap = sns.heatmap(correlation_with_winner.to_frame(), annot=True, cmap="coolwarm", fmt=".2f")
+plt.title('Correlation Heatmap of Features with Winner')
 plt.show()
+
+
 
 
 
