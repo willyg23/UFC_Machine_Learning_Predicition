@@ -2,6 +2,8 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 df = pd.read_csv('ufc_data.csv')
 
@@ -9,6 +11,22 @@ df = pd.read_csv('ufc_data.csv')
 # RELU and softmax activtion methods
 # funcntional api is for more complex things. multiple inputs mapped to multiple outputs
 # sequential api is less complex, one input to one output
+'''
+gemini note:
+Your sequential model is appropriate for this scenario. Functional API is better for more complex networks with multiple inputs or outputs.
+'''
+
+'''
+gemini note:
+Convolutional Neural Networks (CNNs) can be useful for image or time-series data but might be less relevant here.
+Batch normalization and max-pooling could be considered for larger, deeper networks, potentially improving performance.
+'''
+
+'''
+gemini note softmax activation: oftmax activation is used for multi-class classification (more than two outcome categories). 
+Since we're predicting Winner (two classes), stick with sigmoid activation in the output layer.
+Unless we do more than two classes later, then give softmax activation a try!
+'''
 
 # ade advice on what to add
 # you could add batch normalization, max pulling, convoloution neural networks use many layers to predict output
@@ -108,6 +126,25 @@ model.fit(X_train, y_train, epochs=20, batch_size=128)
 loss, accuracy = model.evaluate(X_test, y_test)
 #print('Test Loss:', loss)
 print('Test Accuracy:', accuracy)
+
+# Selecting the features for correlation analysis, excluding 'Winner' column
+features = ['R_odds', 'B_odds', 'B_current_lose_streak', 'B_current_win_streak', 
+            'R_current_lose_streak', 'R_current_win_streak', 'B_Height_cms', 
+            'R_Height_cms', 'B_Reach_cms', 'R_Reach_cms', 'B_total_rounds_fought', 
+            'R_total_rounds_fought']
+
+# Selecting only these columns from the original DataFrame
+corr_df = df[features]
+
+# Calculating the correlation matrix
+correlation_matrix = corr_df.corr()
+
+# Plotting the heatmap
+plt.figure(figsize=(12, 8))
+heatmap = sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title('Correlation Heatmap')
+plt.show()
+
 
 
 # here we could replace new data with a new data set of fights to predict
