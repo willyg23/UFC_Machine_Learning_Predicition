@@ -127,33 +127,50 @@ loss, accuracy = model.evaluate(X_test, y_test)
 #print('Test Loss:', loss)
 print('Test Accuracy:', accuracy)
 
+
+
+# ----- good heatMap code -----
 import seaborn as sns
 import matplotlib.pyplot as plt
+# Ensure 'Winner' is encoded as numbers
+df['Winner'] = df['Winner'].replace({'Red': 0, 'Blue': 1})
 
-# Select features for correlation analysis
-features = ['R_odds', 'B_odds', 'R_current_lose_streak', 'B_current_lose_streak', 
-            'R_current_win_streak', 'B_current_win_streak', 'R_Height_cms', 
-            'B_Height_cms', 'R_Reach_cms', 'B_Reach_cms', 'R_total_rounds_fought', 
-            'B_total_rounds_fought']
+selected_features = df[['Winner', 'R_odds', 'B_odds', 
+                        'R_current_win_streak', 'B_current_win_streak', 
+                        'R_current_lose_streak', 'B_current_lose_streak', 
+                        'R_Height_cms', 'B_Height_cms', 
+                        'R_Reach_cms', 'B_Reach_cms', 
+                        'R_total_rounds_fought', 'B_total_rounds_fought']]
 
-# Select only these columns from the original DataFrame
-corr_df = df[features]
+# Calculate the correlation matrix
+corr = selected_features.corr()
 
-# Encode the 'Winner' column
-df['Winner_encoded'] = df['Winner'].map({'Red': 0, 'Blue': 1})
-
-# Ensure 'Winner_encoded' column is added to DataFrame
-numeric_corr_df = corr_df.assign(Winner_encoded=df['Winner_encoded'])
-
-# Calculate correlation with 'Winner_encoded'
-correlation_with_winner = numeric_corr_df.corr()['Winner_encoded']
-
-# Plotting the heatmap
-plt.figure(figsize=(12, 8))
-heatmap = sns.heatmap(correlation_with_winner.to_frame(), annot=True, cmap="coolwarm", fmt=".2f")
-plt.title('Correlation Heatmap of Features with Winner')
+# Generate a heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr, annot=True, fmt=".2f", cmap='coolwarm')
+plt.title('Correlation of Features with Fight Outcome')
 plt.show()
+# ----- good heatMap code end -----
 
+'''
+heatMap notes:
+A value close to 1 indicates a strong positive correlation... as one feature increases, the other feature tends to increase as well.
+A value close to -1 indicates a strong negative correlation... meaning that as one feature increases, the other tends to decrease.
+A value around 0 suggests little to no linear relationship between the features.
+
+intersection of Winner and R_odds is 0.33:
+As R_odds increase (becomes less favored to win), there's a tendency for the blue corner fighter to win more often. However, the relationship isn't very strong (since 0.33 is moderate),
+Conversely, if the R_odds were lower (become more favored to win), this correlation suggests there would be a lesser tendency for the blue corner fighter to win, aligning with the expectation that lower odds indicate a higher likelihood of winning for the fighter in question.
+
+intersection of Winner and B_odds is -0.34:
+As B_odds increase (becomes less favored to win), the likelihood of the blue fighter winning decreases. This is because the odds becoming more positive (or less negative) for the blue fighter suggest they are less favored to win, which aligns with the negative correlation.
+Conversely, if the B_odds are lower (become more favored to win), there is a higher likelihood of the blue fighter winning. This is indicated by the fight outcome 'Winner' being closer to 1 (blue winning).
+
+the intersection of R_current_win_streak and B_current_win_streak == 0.36, what does that mean?
+Moderate Relationship: The positive value suggests that as the win streak of the red corner fighter increases, the win streak of the blue corner fighter tends to increase as well.
+Implications for Matchmaking: This correlation could suggest that fighters are often matched with opponents of similar recent success. For example, fighters on longer win streaks might be paired against each other, possibly to ensure competitive bouts.
+
+'''
 
 
 
