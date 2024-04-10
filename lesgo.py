@@ -2,6 +2,8 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
+# import seaborn as sns
+# import matplotlib.pyplot as plt
 
 df = pd.read_csv('ufc_data.csv')
 
@@ -9,6 +11,22 @@ df = pd.read_csv('ufc_data.csv')
 # RELU and softmax activtion methods
 # funcntional api is for more complex things. multiple inputs mapped to multiple outputs
 # sequential api is less complex, one input to one output
+'''
+gemini note:
+Your sequential model is appropriate for this scenario. Functional API is better for more complex networks with multiple inputs or outputs.
+'''
+
+'''
+gemini note:
+Convolutional Neural Networks (CNNs) can be useful for image or time-series data but might be less relevant here.
+Batch normalization and max-pooling could be considered for larger, deeper networks, potentially improving performance.
+'''
+
+'''
+gemini note softmax activation: oftmax activation is used for multi-class classification (more than two outcome categories). 
+Since we're predicting Winner (two classes), stick with sigmoid activation in the output layer.
+Unless we do more than two classes later, then give softmax activation a try!
+'''
 
 # ade advice on what to add
 # you could add batch normalization, max pulling, convoloution neural networks use many layers to predict output
@@ -108,6 +126,53 @@ model.fit(X_train, y_train, epochs=20, batch_size=128)
 loss, accuracy = model.evaluate(X_test, y_test)
 #print('Test Loss:', loss)
 print('Test Accuracy:', accuracy)
+
+
+
+# ----- good heatMap code -----
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Ensure 'Winner' is encoded as numbers
+df['Winner'] = df['Winner'].replace({'Red': 0, 'Blue': 1})
+
+selected_features = df[['Winner', 'R_odds', 'B_odds', 
+                        'R_current_win_streak', 'B_current_win_streak', 
+                        'R_current_lose_streak', 'B_current_lose_streak', 
+                        'R_Height_cms', 'B_Height_cms', 
+                        'R_Reach_cms', 'B_Reach_cms', 
+                        'R_total_rounds_fought', 'B_total_rounds_fought']]
+
+# Calculate the correlation matrix
+corr = selected_features.corr()
+
+# Generate a heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr, annot=True, fmt=".2f", cmap='coolwarm')
+plt.title('Correlation of Features with Fight Outcome')
+plt.show()
+# ----- good heatMap code end -----
+
+'''
+heatMap notes:
+A value close to 1 indicates a strong positive correlation... as one feature increases, the other feature tends to increase as well.
+A value close to -1 indicates a strong negative correlation... meaning that as one feature increases, the other tends to decrease.
+A value around 0 suggests little to no linear relationship between the features.
+
+intersection of Winner and R_odds is 0.33:
+As R_odds increase (becomes less favored to win), there's a tendency for the blue corner fighter to win more often. However, the relationship isn't very strong (since 0.33 is moderate),
+Conversely, if the R_odds were lower (become more favored to win), this correlation suggests there would be a lesser tendency for the blue corner fighter to win, aligning with the expectation that lower odds indicate a higher likelihood of winning for the fighter in question.
+
+intersection of Winner and B_odds is -0.34:
+As B_odds increase (becomes less favored to win), the likelihood of the blue fighter winning decreases. This is because the odds becoming more positive (or less negative) for the blue fighter suggest they are less favored to win, which aligns with the negative correlation.
+Conversely, if the B_odds are lower (become more favored to win), there is a higher likelihood of the blue fighter winning. This is indicated by the fight outcome 'Winner' being closer to 1 (blue winning).
+
+the intersection of R_current_win_streak and B_current_win_streak == 0.36, what does that mean?
+Moderate Relationship: The positive value suggests that as the win streak of the red corner fighter increases, the win streak of the blue corner fighter tends to increase as well.
+Implications for Matchmaking: This correlation could suggest that fighters are often matched with opponents of similar recent success. For example, fighters on longer win streaks might be paired against each other, possibly to ensure competitive bouts.
+
+'''
+
+
 
 
 # here we could replace new data with a new data set of fights to predict
