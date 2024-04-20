@@ -155,7 +155,7 @@ print(f"Validation Accuracy: {accuracy}")
 
 
 
-# #------Logistical Regression Start ------#
+# #------Logistical Regression Start ------# Uncomment to use
 # #
 # # Train-Test Split
 # # this splits the data into training and testing sets. test_size = 0.2 would be an 80/20 split of training to testing data. random_state makes the split reproducible.
