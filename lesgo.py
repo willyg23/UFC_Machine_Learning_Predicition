@@ -93,25 +93,58 @@ y = df['Winner'].replace({'Red': 0, 'Blue': 1})
 # Splitting the data into training and validation sets
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# setting up neural network 
+#attempt 1
+#Validation Loss: 0.6706537008285522
+#Validation Accuracy: 0.6112244725227356
+
+# # setting up neural network 
+# model = tf.keras.Sequential([
+#     tf.keras.layers.Dense(64, input_shape=(X_train.shape[1],), activation='relu'),
+#     tf.keras.layers.Dropout(0.1),
+#     tf.keras.layers.Dense(64, activation='relu'),
+#     tf.keras.layers.Dropout(0.1),
+#     tf.keras.layers.Dense(1, activation='sigmoid')
+# ])
+
+# # Compiling the model
+# model.compile(optimizer='adam',
+#               loss='binary_crossentropy',
+#               metrics=['accuracy'])
+
+# # Training the model
+# history = model.fit(X_train, y_train,
+#                     validation_data=(X_val, y_val),
+#                     epochs=50,  # can adjust this based on how quickly the model converges
+#                     batch_size=32)
+
+
+#attempt 2
+#Validation Loss: 0.6718082427978516
+#Validation Accuracy: 0.6112244725227356
+'''
+changes: 
+more neurons per layer (128 instead of 64)
+additional dropout layer to combat potential overfitting 
+adjusted the learning rate in the Adam optimizer
+'''
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(64, input_shape=(X_train.shape[1],), activation='relu'),
-    tf.keras.layers.Dropout(0.1),
-    tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dropout(0.1),
+    tf.keras.layers.Dense(128, input_shape=(X_train.shape[1],), activation='relu'),
+    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(1, activation='sigmoid')
 ])
 
-# Compiling the model
-model.compile(optimizer='adam',
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)  # Adjust learning rate
+model.compile(optimizer=optimizer,
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
-# Training the model
 history = model.fit(X_train, y_train,
                     validation_data=(X_val, y_val),
-                    epochs=50,  # can adjust this based on how quickly the model converges
+                    epochs=50,
                     batch_size=32)
+
 
 # Evaluating the model
 loss, accuracy = model.evaluate(X_val, y_val)
