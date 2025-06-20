@@ -7,31 +7,6 @@ import matplotlib.pyplot as plt
 
 df = pd.read_csv('ufc_data.csv')
 
-# mango advice
-# RELU and softmax activtion methods
-# funcntional api is for more complex things. multiple inputs mapped to multiple outputs
-# sequential api is less complex, one input to one output
-'''
-gemini note:
-Your sequential model is appropriate for this scenario. Functional API is better for more complex networks with multiple inputs or outputs.
-'''
-
-'''
-gemini note:
-Convolutional Neural Networks (CNNs) can be useful for image or time-series data but might be less relevant here.
-Batch normalization and max-pooling could be considered for larger, deeper networks, potentially improving performance.
-'''
-
-'''
-gemini note softmax activation: softmax activation is used for multi-class classification (more than two outcome categories). 
-Since we're predicting Winner (two classes), stick with sigmoid activation in the output layer.
-Unless we do more than two classes later, then give softmax activation a try!
-'''
-
-# ade advice on what to add
-# you could add batch normalization, max pulling, convoloution neural networks use many layers to predict output
-
-
 #prints all the columns in df
 # columns = df.columns
 # print(columns)
@@ -66,7 +41,7 @@ categorical_features = ['R_fighter', 'B_fighter', 'weight_class', 'gender',
                         'B_win_by_Decision_Majority', 'B_win_by_Decision_Split', 'B_win_by_Decision_Unanimous', 'B_win_by_KO/TKO', 'B_win_by_Submission', 'B_win_by_TKO_Doctor_Stoppage',
                         'R_win_by_Decision_Majority', 'R_win_by_Decision_Split', 'R_win_by_Decision_Unanimous', 'R_win_by_KO/TKO', 'R_win_by_Submission', 'R_win_by_TKO_Doctor_Stoppage']
 
-encoded_data = pd.DataFrame() # A placeholder for encoded data
+encoded_data = pd.DataFrame() # placeholder for encoded data
 '''
 This code performs one-hot encoding on categorical features. TensorFlow doesn't take in strings 
 (i.e. "orthoddox" for a fighters stance), so we one-hot encodeeach string to a unique
